@@ -38,10 +38,12 @@ prices <- tidyquant::tq_get(tickers,
 
 
 
-# backup data
+### backup data
+
 #write.csv(prices, file="backup_prices.csv")
+
 # load data
-prices <- read_csv("backup_prices.csv",col_types = cols(...1 = col_skip(), date = col_date(format = "%Y-%m-%d")))
+#prices <- read_csv("backup_prices.csv",col_types = cols(...1 = col_skip(), date = col_date(format = "%Y-%m-%d")))
 
 # remove NAs
 prices <- prices%>%
