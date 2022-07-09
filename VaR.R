@@ -24,12 +24,6 @@ library(tseries)
 library(stringi)
 set.seed(2021)
 
-#######################################################
-# The calculation takes a very long time, the results##
-# can thus be loaded via load("results.RData")        #
-#######################################################
-
-# load("results.RData")
 
 # 1. Get Data, calculate logreturns and portfolio returns --------------------------
 
@@ -86,7 +80,7 @@ test.unweighted$tau <- "tau"
 test.unweighted$AIC <- "AIC"
 
 # CvM test is the S_n test in the thesis
-test.unweighted$CvM.test <- function(u1,u2,weights){ 
+test.unweighted$CvM.test <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult")$p.value
@@ -152,7 +146,7 @@ test.unweighted$CvM.test <- function(u1,u2,weights){
   result
 }
 
-test.unweighted$Rn.test <- function(u1,u2,weights){ 
+test.unweighted$Rn.test <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -284,7 +278,7 @@ test.unweighted$CvM.tau.mult <- function(u1,u2,weights){
   result*abs(cor(u1, u2, method = "kendall", use = "complete.obs"))
 }
 
-test.unweighted$Rn.tau.mult <- function(u1,u2,weights){ 
+test.unweighted$Rn.tau.mult <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -350,7 +344,7 @@ test.unweighted$Rn.tau.mult <- function(u1,u2,weights){
   result*abs(cor(u1, u2, method = "kendall", use = "complete.obs"))
 }
 
-test.unweighted$Rn.CvM.mult <- function(u1,u2,weights){ 
+test.unweighted$Rn.CvM.mult <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -455,7 +449,7 @@ for(i in 1:length(logreturns$PFReturns)){
   logreturns$PFReturns[i] <- mean(as.numeric(logreturns[i,1:6]))
 }
 
-ncol_assets <- ncol(logreturns)-2 # the first n-2 number of columns are where 
+ncol_assets <- ncol(logreturns)-2 # the first n-2 number of columns are where
                                   #the asset returns are stored, last two are
                                   # date and portfolio returns
                                   # use as indicator for models later
@@ -557,8 +551,8 @@ plotacf <- function(x, title){
     theme_bw()+
     geom_hline(aes(yintercept = 0)) +
     geom_segment(mapping = aes(xend = acf(x)$lag, yend = 0)) +
-    geom_hline(aes(yintercept = qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') + 
-    geom_hline(aes(yintercept = -qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') + 
+    geom_hline(aes(yintercept = qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') +
+    geom_hline(aes(yintercept = -qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') +
     labs(x = "Lag", y = "ACF", title = title)+
     theme(plot.title = element_text(hjust = 0.5))
 }
@@ -582,8 +576,8 @@ plotacf.abs <- function(x, title){
     theme_bw()+
     geom_hline(aes(yintercept = 0)) +
     geom_segment(mapping = aes(xend = acf(x)$lag, yend = 0)) +
-    geom_hline(aes(yintercept = qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') + 
-    geom_hline(aes(yintercept = -qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') + 
+    geom_hline(aes(yintercept = qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') +
+    geom_hline(aes(yintercept = -qnorm((1 + 0.95)/2)/sqrt(acf(x)$n.used)), linetype = 2, color = 'darkblue') +
     labs(x = "Lag", y = "ACF", title = title)+
     theme(plot.title = element_text(hjust = 0.5))
 }
@@ -653,7 +647,7 @@ ggsave("histograms.pdf", plot = g, path = "../MA/Plots/VaR", units = "cm", width
 armagarch <- list()
 cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
-armagarch$norm <- foreach(i = 1:ncol_assets,.packages = c("rugarch"), .errorhandling = "pass",.final = function(x) setNames(x, names(logreturns[1:6]))) %dopar%{ 
+armagarch$norm <- foreach(i = 1:ncol_assets,.packages = c("rugarch"), .errorhandling = "pass",.final = function(x) setNames(x, names(logreturns[1:6]))) %dopar%{
     set.seed(2021)
     rugarch::ugarchfit(spec=specnorm, data=logreturns[(1:WE),i],solver.control=list(solver=c(9,10)),solver = "hybrid")#,tol = 1e-10
 }
@@ -661,7 +655,7 @@ parallel::stopCluster(cl)
 
 cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
-armagarch$std <- foreach(i = 1:ncol_assets,.packages = c("rugarch"), .errorhandling = "pass",.final = function(x) setNames(x, names(logreturns[1:6]))) %dopar%{ 
+armagarch$std <- foreach(i = 1:ncol_assets,.packages = c("rugarch"), .errorhandling = "pass",.final = function(x) setNames(x, names(logreturns[1:6]))) %dopar%{
   set.seed(2021)
   rugarch::ugarchfit(spec=specstd, data=logreturns[(1:WE),i],solver.control=list(solver=c(9,10)),solver = "hybrid")#,tol = 1e-10
 }
@@ -669,14 +663,14 @@ parallel::stopCluster(cl)
 
 cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
-armagarch$sstd <- foreach(i = 1:ncol_assets,.packages = c("rugarch"), .errorhandling = "pass",.final = function(x) setNames(x, names(logreturns[1:6]))) %dopar%{ 
+armagarch$sstd <- foreach(i = 1:ncol_assets,.packages = c("rugarch"), .errorhandling = "pass",.final = function(x) setNames(x, names(logreturns[1:6]))) %dopar%{
   set.seed(2021)
   rugarch::ugarchfit(spec=specsstd, data=logreturns[(1:WE),i],solver.control=list(solver=c(9,10)),solver = "hybrid")#,tol = 1e-10
 }
 parallel::stopCluster(cl)
 
 armagarch.report <- function(fit){
-  
+
   Ljung.Box <- Box.test(fit@fit$z, type = "Ljung-Box")$p.value
   Ljung.Box.stat <- Box.test(fit@fit$z, type = "Ljung-Box")$statistic
   Ljung.Box.abs <- Box.test(abs(fit@fit$z), type = "Ljung-Box")$p.value
@@ -695,9 +689,9 @@ armagarch.report <- function(fit){
   results$LB.abs[2] <- Ljung.Box.abs
   results$Arch[1] <- Arch.stat
   results$Arch[2] <- Arch
-  
+
   return(round(results,2))
-  
+
 }
 
 #norm
@@ -728,7 +722,7 @@ armagarch.results <- armagarch.results%>%
 stargazer(as.matrix(armagarch.results), digits = 2, summary = F,
           covariate.labels=c(" ","ticker","$\\hat{\\mu}$", "$\\hat{\\phi}$", "$\\hat{\\theta}$",
                              "$\\hat{\\omega}$","$\\hat{\\alpha}$","$\\hat{\\beta}$", "$shape$", "$LB$", "$LB_{abs}$", "$LM$"),
-          column.sep.width = "1pt", align = T, rownames = F,float.env = "sidewaystable", 
+          column.sep.width = "1pt", align = T, rownames = F,float.env = "sidewaystable",
           title = "ARMA(1,1)-GARCH(1,1) models with standard student t distribution")
 
 #sstd
@@ -951,7 +945,7 @@ find.weights$CvM.tau <- list(length=length(par))
 for(i in 1:length(par)){
   find.weights$CvM.tau[[i]] <- local({
     mu <- par[i]
-    function(u1,u2,weights){ 
+    function(u1,u2,weights){
       fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
       if (fitted_copula$family %in% c(13)) {#180 Clayton
         result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult")$p.value
@@ -1023,7 +1017,7 @@ find.weights$Rn.tau <- list(length=length(par))
 for(i in 1:length(par)){
   find.weights$Rn.tau[[i]] <- local({
     mu <- par[i]
-    function(u1,u2,weights){ 
+    function(u1,u2,weights){
       fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
       if (fitted_copula$family %in% c(13)) {#180 Clayton
         result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -1095,7 +1089,7 @@ find.weights$Rn.CvM <- list(length=length(par))
 for(i in 1:length(par)){
   find.weights$Rn.CvM[[i]] <- local({
     mu <- par[i]
-    function(u1,u2,weights){ 
+    function(u1,u2,weights){
       fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
       if (fitted_copula$family %in% c(13)) {#180 Clayton
         result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -1323,18 +1317,18 @@ find.weights.plots$Rn.CvM <- find.weights.aics$Rn.CvM%>%
 
 
 get_only_legend <- function(plot) {
-  
+
   # get tabular interpretation of plot
-  plot_table <- ggplot_gtable(ggplot_build(plot)) 
-  
+  plot_table <- ggplot_gtable(ggplot_build(plot))
+
   #  Mark only legend in plot
-  legend_plot <- which(sapply(plot_table$grobs, function(x) x$name) == "guide-box") 
-  
+  legend_plot <- which(sapply(plot_table$grobs, function(x) x$name) == "guide-box")
+
   # extract legend
   legend <- plot_table$grobs[[legend_plot]]
-  
+
   # return legend
-  return(legend) 
+  return(legend)
 }
 find.weights.plots$legend <- get_only_legend(find.weights.plots$CvM.tau.legend)
 combined_plot <- grid.arrange(find.weights.plots$CvM.tau, find.weights.plots$Rn.tau, ncol = 2, nrow = 1)
@@ -1347,7 +1341,7 @@ best.weights$CvM.tau <- 0.1
 best.weights$Rn.CvM <- 0.1
 
 test.weighted.best <- list()
-test.weighted.best$CvM.tau <- function(u1,u2,weights){ 
+test.weighted.best$CvM.tau <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult")$p.value
@@ -1412,7 +1406,7 @@ test.weighted.best$CvM.tau <- function(u1,u2,weights){
   #print(fam)
   best.weights$CvM.tau*result+(1-best.weights$CvM.tau)*abs(cor(u1, u2, method = "kendall", use = "complete.obs"))
 }
-test.weighted.best$Rn.tau <- function(u1,u2,weights){ 
+test.weighted.best$Rn.tau <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -1477,7 +1471,7 @@ test.weighted.best$Rn.tau <- function(u1,u2,weights){
   #print(fam)
   best.weights$Rn.tau*result+(1-best.weights$Rn.tau)*abs(cor(u1, u2, method = "kendall", use = "complete.obs"))
 }
-test.weighted.best$Rn.CvM <- function(u1,u2,weights){ 
+test.weighted.best$Rn.CvM <- function(u1,u2,weights){
   fitted_copula <- suppressWarnings(VineCopula::BiCopSelect(u1=u1,u2=u2,familyset = c(1,2,3,4,5,6)))
   if (fitted_copula$family %in% c(13)) {#180 Clayton
     result <- copula::gofCopula(copula=copula::rotCopula(copula = copula::claytonCopula(dim=2,param = fitted_copula$par)), x=cbind(u1,u2),test.method="single", simulation="mult",method="Rn")$p.value
@@ -1564,46 +1558,46 @@ test.weighted.best$Rn.CvM <- function(u1,u2,weights){
 
 # implement ranked tests
 
-RVineStructureSelect_2ranked_alpha <- function (alpha=0.5, data, familyset = NA, type = 0, selectioncrit = "AIC", 
-                                                indeptest = FALSE, level = 0.05, trunclevel = NA, progress = FALSE, 
-                                                weights = NA, treecrit = "tau",treecrit2="tau", rotations = TRUE, se = FALSE, 
-                                                presel = TRUE, method = "mle", cores = 1) 
+RVineStructureSelect_2ranked_alpha <- function (alpha=0.5, data, familyset = NA, type = 0, selectioncrit = "AIC",
+                                                indeptest = FALSE, level = 0.05, trunclevel = NA, progress = FALSE,
+                                                weights = NA, treecrit = "tau",treecrit2="tau", rotations = TRUE, se = FALSE,
+                                                presel = TRUE, method = "mle", cores = 1)
 {
-  args <- preproc(c(as.list(environment()), call = match.call()), 
-                  check_data, check_nobs, check_if_01, prep_familyset, 
+  args <- preproc(c(as.list(environment()), call = match.call()),
+                  check_data, check_nobs, check_if_01, prep_familyset,
                   check_twoparams)
   list2env(args, environment())
   d <- ncol(data)
   n <- nrow(data)
-  if (d < 2) 
+  if (d < 2)
     stop("Dimension has to be at least 2.")
   if (d == 2) {
-    return(RVineCopSelect(data, familyset = familyset, Matrix = matrix(c(2, 
-                                                                         1, 0, 1), 2, 2), selectioncrit = selectioncrit, 
-                          indeptest = indeptest, level = level, trunclevel = trunclevel, 
-                          weights = weights, rotations = FALSE, se = se, presel = presel, 
+    return(RVineCopSelect(data, familyset = familyset, Matrix = matrix(c(2,
+                                                                         1, 0, 1), 2, 2), selectioncrit = selectioncrit,
+                          indeptest = indeptest, level = level, trunclevel = trunclevel,
+                          weights = weights, rotations = FALSE, se = se, presel = presel,
                           method = method, cores = cores))
   }
-  if (!(selectioncrit %in% c("AIC", "BIC", "logLik"))) 
+  if (!(selectioncrit %in% c("AIC", "BIC", "logLik")))
     stop("Selection criterion not implemented.")
-  if (level < 0 & level > 1) 
+  if (level < 0 & level > 1)
     stop("Significance level has to be between 0 and 1.")
-  if (type == 0) 
+  if (type == 0)
     type <- "RVine"
-  if (type == 1) 
+  if (type == 1)
     type <- "CVine"
   treecrit <- set_treecrit(treecrit, familyset)
   treecrit2 <- set_treecrit2(treecrit2, familyset)
-  if (is.na(trunclevel)) 
+  if (is.na(trunclevel))
     trunclevel <- d
-  if (trunclevel == 0) 
+  if (trunclevel == 0)
     familyset <- 0
   RVine <- list(Tree = NULL, Graph = NULL)
   warn <- NULL
   g <- initializeFirstGraph_2ranked_alpha(alpha, data, treecrit, treecrit2, weights)
   MST <- findMaxTree(g, mode = type)
   if (cores != 1 | is.na(cores)) {
-    if (is.na(cores)) 
+    if (is.na(cores))
       cores <- max(1, detectCores() - 1)
     if (cores > 1) {
       cl <- makePSOCKcluster(cores)
@@ -1611,11 +1605,11 @@ RVineStructureSelect_2ranked_alpha <- function (alpha=0.5, data, familyset = NA,
       on.exit(try(stopCluster(cl), silent = TRUE))
     }
   }
-  VineTree <- fit.FirstTreeCopulas(MST, data, familyset = familyset, 
-                                   selectioncrit = selectioncrit, indeptest = indeptest, 
-                                   level = level, weights = weights, se = se, presel = presel, 
+  VineTree <- fit.FirstTreeCopulas(MST, data, familyset = familyset,
+                                   selectioncrit = selectioncrit, indeptest = indeptest,
+                                   level = level, weights = weights, se = se, presel = presel,
                                    method = method, cores = cores)
-  if (!is.null(VineTree$warn)) 
+  if (!is.null(VineTree$warn))
     warn <- VineTree$warn
   RVine$Tree[[1]] <- VineTree
   RVine$Graph[[1]] <- g
@@ -1623,25 +1617,25 @@ RVineStructureSelect_2ranked_alpha <- function (alpha=0.5, data, familyset = NA,
   for (tree in 2:(d - 1)) {
     RVine$Tree[[tree - 1]]$E$Copula.CondData.1 <- NULL
     RVine$Tree[[tree - 1]]$E$Copula.CondData.2 <- NULL
-    if (trunclevel == tree - 1) 
+    if (trunclevel == tree - 1)
       familyset <- 0
-    g <- buildNextGraph_2ranked_alpha(alpha,VineTree, weights, treecrit = treecrit,treecrit2=treecrit2, 
+    g <- buildNextGraph_2ranked_alpha(alpha,VineTree, weights, treecrit = treecrit,treecrit2=treecrit2,
                                       cores > 1, truncated = trunclevel < tree)
-    MST <- findMaxTree(g, mode = type, truncated = trunclevel < 
+    MST <- findMaxTree(g, mode = type, truncated = trunclevel <
                          tree)
-    VineTree <- fit.TreeCopulas(MST, VineTree, familyset, 
-                                selectioncrit, indeptest, level, progress, weights = weights, 
+    VineTree <- fit.TreeCopulas(MST, VineTree, familyset,
+                                selectioncrit, indeptest, level, progress, weights = weights,
                                 se = se, presel = presel, method = method, cores = cores)
-    if (!is.null(VineTree$warn)) 
+    if (!is.null(VineTree$warn))
       warn <- VineTree$warn
     RVine$Tree[[tree]] <- VineTree
     RVine$Graph[[tree]] <- g
   }
-  if (any(is.na(data))) 
-    warning(" In ", args$call[1], ": ", "Some of the data are NA. ", 
-            "Only pairwise complete observations are used.", 
+  if (any(is.na(data)))
+    warning(" In ", args$call[1], ": ", "Some of the data are NA. ",
+            "Only pairwise complete observations are used.",
             call. = FALSE)
-  if (!is.null(warn)) 
+  if (!is.null(warn))
     warning(" In ", args$call[1], ": ", warn, call. = FALSE)
   .RVine <- RVine
   .data <- data
@@ -1654,14 +1648,14 @@ RVineStructureSelect_2ranked_alpha <- function (alpha=0.5, data, familyset = NA,
 environment(RVineStructureSelect_2ranked_alpha) <- asNamespace('VineCopula')
 
 
-initializeFirstGraph_2ranked_alpha <- function (alpha, data, treecrit, treecrit2, weights) 
+initializeFirstGraph_2ranked_alpha <- function (alpha, data, treecrit, treecrit2, weights)
 {
   all.pairs <- combn(1:ncol(data), 2)
-  edge.ws <- apply(all.pairs, 2, function(ind) treecrit(data[, 
+  edge.ws <- apply(all.pairs, 2, function(ind) treecrit(data[,
                                                              ind[1]], data[, ind[2]], weights))
-  edge.ws2 <- apply(all.pairs, 2, function(ind) treecrit2(data[, 
+  edge.ws2 <- apply(all.pairs, 2, function(ind) treecrit2(data[,
                                                                ind[1]], data[, ind[2]], weights))
-  rel.nobs <- apply(all.pairs, 2, function(ind) mean(!is.na(data[, 
+  rel.nobs <- apply(all.pairs, 2, function(ind) mean(!is.na(data[,
                                                                  ind[1]] + data[, ind[2]])))
   weightmatrix <- as.data.frame(cbind(rank(edge.ws,na.last = "keep"),rank(edge.ws2,na.last = "keep")))
   for (i in 1:length(weightmatrix[,1])){
@@ -1677,18 +1671,18 @@ initializeFirstGraph_2ranked_alpha <- function (alpha, data, treecrit, treecrit2
 
 environment(initializeFirstGraph_2ranked_alpha) <- asNamespace('VineCopula')
 
-getEdgeInfo_2ranked_alpha <- function (alpha,i, g, oldVineGraph, treecrit, treecrit2, weights, truncated = FALSE) 
+getEdgeInfo_2ranked_alpha <- function (alpha,i, g, oldVineGraph, treecrit, treecrit2, weights, truncated = FALSE)
 {
   con <- g$E$nums[i, ]
   temp <- oldVineGraph$E$nums[con, ]
   ok <- FALSE
-  if ((temp[1, 1] == temp[2, 1]) || (temp[1, 2] == temp[2, 
+  if ((temp[1, 1] == temp[2, 1]) || (temp[1, 2] == temp[2,
                                                         1])) {
     ok <- TRUE
     same <- temp[2, 1]
   }
   else {
-    if ((temp[1, 1] == temp[2, 2]) || (temp[1, 2] == temp[2, 
+    if ((temp[1, 1] == temp[2, 2]) || (temp[1, 2] == temp[2,
                                                           2])) {
       ok <- TRUE
       same <- temp[2, 2]
@@ -1725,16 +1719,16 @@ getEdgeInfo_2ranked_alpha <- function (alpha,i, g, oldVineGraph, treecrit, treec
         zr2a <- zr2
       }
       keine_nas <- !(is.na(zr1a) | is.na(zr2a))
-      w <- treecrit(zr1a[keine_nas], zr2a[keine_nas], 
+      w <- treecrit(zr1a[keine_nas], zr2a[keine_nas],
                     weights)
-      w2 <- treecrit2(zr1a[keine_nas], zr2a[keine_nas], 
+      w2 <- treecrit2(zr1a[keine_nas], zr2a[keine_nas],
                       weights)
       name.node1 <- strsplit(g$V$names[con[1]], split = " *[,;] *")[[1]]
       name.node2 <- strsplit(g$V$names[con[2]], split = " *[,;] *")[[1]]
-      nmdiff <- c(setdiff(name.node1, name.node2), setdiff(name.node2, 
+      nmdiff <- c(setdiff(name.node1, name.node2), setdiff(name.node2,
                                                            name.node1))
       nmsect <- intersect(name.node1, name.node2)
-      name <- paste(paste(nmdiff, collapse = ","), paste(nmsect, 
+      name <- paste(paste(nmdiff, collapse = ","), paste(nmsect,
                                                          collapse = ","), sep = " ; ")
     }
     else {
@@ -1742,24 +1736,24 @@ getEdgeInfo_2ranked_alpha <- function (alpha,i, g, oldVineGraph, treecrit, treec
       w2 <- 1
     }
   }
-  list(w = w, w2=w2, nedSet = nedSet, ningSet = ningSet, name = name, 
+  list(w = w, w2=w2, nedSet = nedSet, ningSet = ningSet, name = name,
        todel = todel)
 }
 
 environment(getEdgeInfo_2ranked_alpha) <- asNamespace('VineCopula')
 
-buildNextGraph_2ranked_alpha <- function (alpha,oldVineGraph, treecrit, treecrit2, weights = NA, parallel, truncated = FALSE) 
+buildNextGraph_2ranked_alpha <- function (alpha,oldVineGraph, treecrit, treecrit2, weights = NA, parallel, truncated = FALSE)
 {
   d <- nrow(oldVineGraph$E$nums)
   g <- makeFullGraph(d)
   g$V$names <- oldVineGraph$E$names
   g$V$conditionedSet <- oldVineGraph$E$conditionedSet
   g$V$conditioningSet <- oldVineGraph$E$conditioningSet
-  if (parallel) 
-    lapply <- function(...) parallel::parLapply(getDefaultCluster(), 
+  if (parallel)
+    lapply <- function(...) parallel::parLapply(getDefaultCluster(),
                                                 ...)
   out <- lapply(seq_len(nrow(g$E$nums)), getEdgeInfo_2ranked_alpha, g = g,alpha=alpha,
-                oldVineGraph = oldVineGraph, treecrit = treecrit, treecrit2=treecrit2, weights = weights, 
+                oldVineGraph = oldVineGraph, treecrit = treecrit, treecrit2=treecrit2, weights = weights,
                 truncated = truncated)
   weightmatrix <- as.data.frame(cbind(rank(sapply(out, function(x) x$w),na.last = "keep"),rank(sapply(out, function(x) x$w2),na.last = "keep")))
   for (i in 1:length(weightmatrix[,1])){
@@ -1775,14 +1769,14 @@ buildNextGraph_2ranked_alpha <- function (alpha,oldVineGraph, treecrit, treecrit
 
 environment(buildNextGraph_2ranked_alpha) <- asNamespace('VineCopula')
 
-set_treecrit2 <- function (treecrit2, famset) 
+set_treecrit2 <- function (treecrit2, famset)
 {
   if (is.function(treecrit2)) {
-    w <- try(treecrit2(u1 = runif(10), u2 = runif(10), weights = rep(1, 
+    w <- try(treecrit2(u1 = runif(10), u2 = runif(10), weights = rep(1,
                                                                      10)), silent = TRUE)
-    if (inherits(w, "try-error")) 
+    if (inherits(w, "try-error"))
       stop("treecrit2 must be of the form 'function(u1, u2, weights)'")
-    if (!is.numeric(w) || length(w) > 1) 
+    if (!is.numeric(w) || length(w) > 1)
       stop("treecrit2 does not return a numeric scalar")
   }
   else if (all(treecrit2 == "tau")) {
@@ -1793,7 +1787,7 @@ set_treecrit2 <- function (treecrit2, famset)
       }
       else {
         complete.freq <- mean(!is.na(u1 + u2))
-        tau <- abs(fasttau(u1[complete.i], u2[complete.i], 
+        tau <- abs(fasttau(u1[complete.i], u2[complete.i],
                            weights))
         tau * sqrt(complete.freq)
       }
@@ -1807,7 +1801,7 @@ set_treecrit2 <- function (treecrit2, famset)
       }
       else {
         complete.freq <- mean(!is.na(u1 + u2))
-        rho <- abs(cor(u1, u2, method = "spearman", 
+        rho <- abs(cor(u1, u2, method = "spearman",
                        use = "complete.obs"))
         rho * sqrt(complete.freq)
       }
@@ -1820,7 +1814,7 @@ set_treecrit2 <- function (treecrit2, famset)
         AIC <- 0
       }
       else {
-        AIC <- -suppressWarnings(BiCopSelect(u1[complete.i], 
+        AIC <- -suppressWarnings(BiCopSelect(u1[complete.i],
                                              u2[complete.i], familyset = famset, weights = weights)$AIC)
       }
       AIC
@@ -1833,7 +1827,7 @@ set_treecrit2 <- function (treecrit2, famset)
         BIC <- 0
       }
       else {
-        BIC <- -suppressWarnings(BiCopSelect(u1[complete.i], 
+        BIC <- -suppressWarnings(BiCopSelect(u1[complete.i],
                                              u2[complete.i], familyset = famset, weights = weights)$BIC)
       }
       BIC
@@ -1846,11 +1840,11 @@ set_treecrit2 <- function (treecrit2, famset)
         cAIC <- 0
       }
       else {
-        fit <- suppressWarnings(BiCopSelect(u1[complete.i], 
+        fit <- suppressWarnings(BiCopSelect(u1[complete.i],
                                             u2[complete.i], familyset = famset, weights = weights))
         n <- fit$nobs
         p <- fit$npars
-        cAIC <- -(fit$AIC + 2 * p * (p + 1)/(n - p - 
+        cAIC <- -(fit$AIC + 2 * p * (p + 1)/(n - p -
                                                1))
       }
       cAIC
@@ -1872,7 +1866,7 @@ cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
 clusterExport(cl=cl, c('RVineStructureSelect_2ranked_alpha', 'initializeFirstGraph_2ranked_alpha','getEdgeInfo_2ranked_alpha',
                        'buildNextGraph_2ranked_alpha','set_treecrit2'))
-find.weights.ranked.results$Rn.tau <- foreach(k = 1:10,.packages = "VineCopula") %:% 
+find.weights.ranked.results$Rn.tau <- foreach(k = 1:10,.packages = "VineCopula") %:%
   foreach(i=1:length(par)) %dopar% {
   set.seed(2021)
     zvalues <- matrix(nrow=WE-9, ncol=ncol_assets)#nrow_assets
@@ -1883,7 +1877,7 @@ find.weights.ranked.results$Rn.tau <- foreach(k = 1:10,.packages = "VineCopula")
       }else{
         zvalues[,l] = fGarch::pstd(GARCH.for.weights[[j]][[i]]@fit$z, nu=GARCH.for.weights[[j]][[k]]@fit$coef[7])}
     }
-    
+
   RVineStructureSelect_2ranked_alpha(alpha=par[i],data=zvalues, familyset = c(1,2,3,4,5,6), treecrit = test.unweighted$Rn.test, treecrit2="tau")
 }
 parallel::stopCluster(cl)
@@ -1893,7 +1887,7 @@ cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
 clusterExport(cl=cl, c('RVineStructureSelect_2ranked_alpha', 'initializeFirstGraph_2ranked_alpha','getEdgeInfo_2ranked_alpha',
                        'buildNextGraph_2ranked_alpha','set_treecrit2'))
-find.weights.ranked.results$CvM.tau <- foreach(k = 1:10,.packages = "VineCopula") %:% 
+find.weights.ranked.results$CvM.tau <- foreach(k = 1:10,.packages = "VineCopula") %:%
   foreach(i=1:length(par)) %dopar% {
     set.seed(2021)
     zvalues <- matrix(nrow=WE-9, ncol=ncol_assets)#nrow_assets
@@ -1904,7 +1898,7 @@ find.weights.ranked.results$CvM.tau <- foreach(k = 1:10,.packages = "VineCopula"
       }else{
         zvalues[,l] = fGarch::pstd(GARCH.for.weights[[j]][[i]]@fit$z, nu=GARCH.for.weights[[j]][[k]]@fit$coef[7])}
     }
-    
+
     RVineStructureSelect_2ranked_alpha(alpha=par[i],data=zvalues, familyset = c(1,2,3,4,5,6), treecrit = test.unweighted$CvM.test, treecrit2="tau")
   }
 parallel::stopCluster(cl)
@@ -1913,7 +1907,7 @@ cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
 clusterExport(cl=cl, c('RVineStructureSelect_2ranked_alpha', 'initializeFirstGraph_2ranked_alpha','getEdgeInfo_2ranked_alpha',
                        'buildNextGraph_2ranked_alpha','set_treecrit2'))
-find.weights.ranked.results$Rn.AIC <- foreach(k = 1:10,.packages = "VineCopula") %:% 
+find.weights.ranked.results$Rn.AIC <- foreach(k = 1:10,.packages = "VineCopula") %:%
   foreach(i=1:length(par)) %dopar% {
     set.seed(2021)
     zvalues <- matrix(nrow=WE-9, ncol=ncol_assets)#nrow_assets
@@ -1924,7 +1918,7 @@ find.weights.ranked.results$Rn.AIC <- foreach(k = 1:10,.packages = "VineCopula")
       }else{
         zvalues[,l] = fGarch::pstd(GARCH.for.weights[[j]][[i]]@fit$z, nu=GARCH.for.weights[[j]][[k]]@fit$coef[7])}
     }
-    
+
     RVineStructureSelect_2ranked_alpha(alpha=par[i],data=zvalues, familyset = c(1,2,3,4,5,6), treecrit = test.unweighted$Rn.test, treecrit2="AIC")
   }
 parallel::stopCluster(cl)
@@ -1934,7 +1928,7 @@ cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
 clusterExport(cl=cl, c('RVineStructureSelect_2ranked_alpha', 'initializeFirstGraph_2ranked_alpha','getEdgeInfo_2ranked_alpha',
                        'buildNextGraph_2ranked_alpha','set_treecrit2'))
-find.weights.ranked.results$CvM.AIC <- foreach(k = 1:10,.packages = "VineCopula") %:% 
+find.weights.ranked.results$CvM.AIC <- foreach(k = 1:10,.packages = "VineCopula") %:%
   foreach(i=1:length(par)) %dopar% {
     set.seed(2021)
     zvalues <- matrix(nrow=WE-9, ncol=ncol_assets)#nrow_assets
@@ -1945,7 +1939,7 @@ find.weights.ranked.results$CvM.AIC <- foreach(k = 1:10,.packages = "VineCopula"
       }else{
         zvalues[,l] = fGarch::pstd(GARCH.for.weights[[j]][[i]]@fit$z, nu=GARCH.for.weights[[j]][[k]]@fit$coef[7])}
     }
-    
+
     RVineStructureSelect_2ranked_alpha(alpha=par[i],data=zvalues, familyset = c(1,2,3,4,5,6), treecrit = test.unweighted$CvM.test, treecrit2="AIC")
   }
 parallel::stopCluster(cl)
@@ -1956,7 +1950,7 @@ cl <- parallel::makeCluster(cores2)
 doParallel::registerDoParallel(cl)
 clusterExport(cl=cl, c('RVineStructureSelect_2ranked_alpha', 'initializeFirstGraph_2ranked_alpha','getEdgeInfo_2ranked_alpha',
                        'buildNextGraph_2ranked_alpha','set_treecrit2'))
-find.weights.ranked.results$Rn.CvM <- foreach(k = 1:10,.packages = "VineCopula") %:% 
+find.weights.ranked.results$Rn.CvM <- foreach(k = 1:10,.packages = "VineCopula") %:%
   foreach(i=1:length(par)) %dopar% {
     set.seed(2021)
     zvalues <- matrix(nrow=WE-9, ncol=ncol_assets)#nrow_assets
@@ -1967,7 +1961,7 @@ find.weights.ranked.results$Rn.CvM <- foreach(k = 1:10,.packages = "VineCopula")
       }else{
         zvalues[,l] = fGarch::pstd(GARCH.for.weights[[j]][[i]]@fit$z, nu=GARCH.for.weights[[j]][[k]]@fit$coef[7])}
     }
-    
+
     RVineStructureSelect_2ranked_alpha(alpha=par[i],data=zvalues, familyset = c(1,2,3,4,5,6), treecrit = test.unweighted$Rn.test, treecrit2=test.unweighted$CvM.test)
   }
 parallel::stopCluster(cl)
@@ -2378,7 +2372,7 @@ Vines$Rn.tau.ranked <- foreach(i = 1:(TComplete-WE), .packages = "VineCopula") %
     }else{
       zvalues[,j] = fGarch::pstd(GARCH[[j]][[i]]@fit$z, nu=GARCH[[j]][[i]]@fit$coef[7])}
   }
-  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$Rn.tau, data=zvalues,familyset = c(1,2,3,4,5,6), 
+  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$Rn.tau, data=zvalues,familyset = c(1,2,3,4,5,6),
                                      treecrit = test.unweighted$Rn.test, treecrit2 = "tau", indeptest = FALSE)
 }
 parallel::stopCluster(cl)
@@ -2398,7 +2392,7 @@ Vines$CvM.tau.ranked <- foreach(i = 1:(TComplete-WE),.packages = "VineCopula") %
     }else{
       zvalues[,j] = fGarch::pstd(GARCH[[j]][[i]]@fit$z, nu=GARCH[[j]][[i]]@fit$coef[7])}
   }
-  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$CvM.tau, data=zvalues,familyset = c(1,2,3,4,5,6), 
+  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$CvM.tau, data=zvalues,familyset = c(1,2,3,4,5,6),
                                      treecrit = test.unweighted$CvM.test, treecrit2 = "tau", indeptest = FALSE)
 }
 parallel::stopCluster(cl)
@@ -2418,7 +2412,7 @@ Vines$Rn.AIC.ranked <- foreach(i = 1:(TComplete-WE), .packages = "VineCopula") %
     }else{
       zvalues[,j] = fGarch::pstd(GARCH[[j]][[i]]@fit$z, nu=GARCH[[j]][[i]]@fit$coef[7])}
   }
-  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$Rn.AIC, data=zvalues,familyset = c(1,2,3,4,5,6), 
+  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$Rn.AIC, data=zvalues,familyset = c(1,2,3,4,5,6),
                                      treecrit = test.unweighted$Rn.test, treecrit2 = "AIC", indeptest = FALSE)
 }
 parallel::stopCluster(cl)
@@ -2438,7 +2432,7 @@ Vines$CvM.AIC.ranked <- foreach(i = 1:(TComplete-WE), .packages = "VineCopula") 
     }else{
       zvalues[,j] = fGarch::pstd(GARCH[[j]][[i]]@fit$z, nu=GARCH[[j]][[i]]@fit$coef[7])}
   }
-  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$CvM.AIC, data=zvalues,familyset = c(1,2,3,4,5,6), 
+  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$CvM.AIC, data=zvalues,familyset = c(1,2,3,4,5,6),
                                      treecrit = test.unweighted$CvM.test, treecrit2 = "AIC", indeptest = FALSE)
 }
 parallel::stopCluster(cl)
@@ -2458,7 +2452,7 @@ Vines$Rn.CvM.ranked <- foreach(i = 1:(TComplete-WE),.packages = "VineCopula") %d
     }else{
       zvalues[,j] = fGarch::pstd(GARCH[[j]][[i]]@fit$z, nu=GARCH[[j]][[i]]@fit$coef[7])}
   }
-  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$Rn.CvM, data=zvalues,familyset = c(1,2,3,4,5,6), 
+  RVineStructureSelect_2ranked_alpha(alpha = best.weights.ranked$Rn.CvM, data=zvalues,familyset = c(1,2,3,4,5,6),
                                      treecrit = test.unweighted$Rn.test, treecrit2 = test.unweighted$Rn.test, indeptest = FALSE)
 }
 parallel::stopCluster(cl)
@@ -2476,7 +2470,7 @@ doParallel::registerDoParallel(cl)
 VaR$tau <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$tau[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2485,26 +2479,26 @@ VaR$tau <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2514,7 +2508,7 @@ doParallel::registerDoParallel(cl)
 VaR$AIC <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- Vi <- eCopula::RVineSim(N=N, RVM = Vines$AIC[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2523,26 +2517,26 @@ VaR$AIC <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2552,7 +2546,7 @@ doParallel::registerDoParallel(cl)
 VaR[["Rn"]] <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2561,26 +2555,26 @@ VaR[["Rn"]] <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2591,7 +2585,7 @@ doParallel::registerDoParallel(cl)
 VaR$CvM <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$CvM[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2600,26 +2594,26 @@ VaR$CvM <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2629,7 +2623,7 @@ doParallel::registerDoParallel(cl)
 VaR$Rn.tau.mult <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn.tau.mult[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2638,26 +2632,26 @@ VaR$Rn.tau.mult <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2667,7 +2661,7 @@ doParallel::registerDoParallel(cl)
 VaR$CvM.tau.mult <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$CvM.tau.mult[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2676,26 +2670,26 @@ VaR$CvM.tau.mult <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2705,7 +2699,7 @@ doParallel::registerDoParallel(cl)
 VaR$CvM.Rn.mult <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$CvM.Rn.mult[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2714,26 +2708,26 @@ VaR$CvM.Rn.mult <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2743,7 +2737,7 @@ doParallel::registerDoParallel(cl)
 VaR$CvM.tau.weighted <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$CvM.tau.weighted[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2752,26 +2746,26 @@ VaR$CvM.tau.weighted <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% {
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2781,7 +2775,7 @@ doParallel::registerDoParallel(cl)
 VaR$Rn.tau.weighted <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn.tau.weighted[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2790,26 +2784,26 @@ VaR$Rn.tau.weighted <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { 
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2819,7 +2813,7 @@ doParallel::registerDoParallel(cl)
 VaR$Rn.CvM.weighted <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn.CvM.weighted[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2828,26 +2822,26 @@ VaR$Rn.CvM.weighted <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { 
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2857,7 +2851,7 @@ doParallel::registerDoParallel(cl)
 VaR$Rn.tau.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn.tau.ranked[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2866,25 +2860,25 @@ VaR$Rn.tau.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
+
 }
 parallel::stopCluster(cl)
 
@@ -2894,7 +2888,7 @@ doParallel::registerDoParallel(cl)
 VaR$CvM.tau.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$CvM.tau.ranked[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2903,26 +2897,26 @@ VaR$CvM.tau.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -2932,7 +2926,7 @@ doParallel::registerDoParallel(cl)
 VaR$Rn.AIC.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn.AIC.ranked[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2941,25 +2935,25 @@ VaR$Rn.AIC.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
+
 }
 parallel::stopCluster(cl)
 
@@ -2969,7 +2963,7 @@ doParallel::registerDoParallel(cl)
 VaR$CvM.AIC.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$CvM.AIC.ranked[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -2978,25 +2972,25 @@ VaR$CvM.AIC.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
+
 }
 parallel::stopCluster(cl)
 
@@ -3007,7 +3001,7 @@ doParallel::registerDoParallel(cl)
 VaR$Rn.CvM.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(T-WE)
   set.seed(2021)
   sim.rv <- VineCopula::RVineSim(N=N, RVM = Vines$Rn.CvM.ranked[[i]])
-  
+
   simZ <- matrix(nrow=N, ncol=ncol_assets)
   for(j in 1:ncol_assets){
     if("skew" %in% names(GARCH[[j]][[i]]@fit$coef)){
@@ -3016,26 +3010,26 @@ VaR$Rn.CvM.ranked <- foreach(i = 1:(TComplete-WE),.combine='rbind') %dopar% { #(
       simZ[,j] = rugarch::qdist(distribution = "std", p = sim.rv[,j], mu = 0, sigma= 1, shape=GARCH[[j]][[i]]@fit$coef[7])
     }
   }
-  
+
   sigma <- vector(length = ncol_assets)
   for(j in 1:ncol_assets){
     sigma[j] = as.numeric(sqrt(pmax(0,(as.numeric(GARCH[[j]][[i]]@fit$coef[4]+GARCH[[j]][[i]]@fit$coef[2]*GARCH[[j]][[i]]@fit$sigma[WE]^2*GARCH[[j]][[i]]@fit$z[WE]^2+GARCH[[j]][[i]]@fit$coef[6]*GARCH[[j]][[i]]@fit$sigma[WE]^2)))))
   }
-  
+
   returns <- matrix(nrow = N, ncol = ncol_assets)
   for(j in 1:ncol_assets){
     returns[,j] = as.numeric(GARCH[[j]][[i]]@fit$coef[1] + GARCH[[j]][[i]]@fit$coef[2]*logreturns[(WE-1+i),j] +simZ[,j]*sigma[j] + GARCH[[j]][[i]]@fit$coef[3]*GARCH[[j]][[i]]@fit$sigma[WE]*GARCH[[j]][[i]]@fit$z[WE])
   }
-  
+
   returnssorted <- apply(returns, 2, sort)
-  
+
   VaR01 <- mean(returnssorted[N*0.01,])
   VaR025 <- mean(returnssorted[N*0.025,])
   VaR05 <- mean(returnssorted[N*0.05,])
-  
+
   c(VaR01, VaR025, VaR05)
-  
-  
+
+
 }
 parallel::stopCluster(cl)
 
@@ -3055,11 +3049,11 @@ report.testresult <- function(VaRs_){ # collect results
   expected.exceed01 <- rugarch::VaRTest(alpha=0.01,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,1], conf.level=0.95)$expected.exceed
   expected.exceed025 <- rugarch::VaRTest(alpha=0.025,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,2], conf.level=0.95)$expected.exceed
   expected.exceed05 <- rugarch::VaRTest(alpha=0.05,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,3], conf.level=0.95)$expected.exceed
-  
+
   actual.exceed01 <- rugarch::VaRTest(alpha=0.01,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,1], conf.level=0.95)$actual.exceed
   actual.exceed025 <- rugarch::VaRTest(alpha=0.025,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,2], conf.level=0.95)$actual.exceed
   actual.exceed05 <- rugarch::VaRTest(alpha=0.05,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,3], conf.level=0.95)$actual.exceed
-  
+
   uc.LRp01 <- rugarch::VaRTest(alpha=0.01,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,1], conf.level=0.95)$uc.LRp
   uc.LRp025 <- rugarch::VaRTest(alpha=0.025,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,2], conf.level=0.95)$uc.LRp
   uc.LRp05 <- rugarch::VaRTest(alpha=0.05,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,3], conf.level=0.95)$uc.LRp
@@ -3069,16 +3063,16 @@ report.testresult <- function(VaRs_){ # collect results
   vd.LRp01 <- rugarch::VaRDurTest(alpha=0.01,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,1], conf.level=0.95)$LRp
   vd.LRp025 <- rugarch::VaRDurTest(alpha=0.025,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,2], conf.level=0.95)$LRp
   vd.LRp05 <- rugarch::VaRDurTest(alpha=0.05,actual=logreturns$PFReturns[(WE+1):(TComplete)], VaR=VaRs_[,3], conf.level=0.95)$LRp
-  
+
   resultlist <- list()
   resultlist$expected <- c(expected.exceed01,expected.exceed025,expected.exceed05)
   resultlist$actual <- c(actual.exceed01,actual.exceed025,actual.exceed05)
   resultlist$UC <- c(uc.LRp01,uc.LRp025,uc.LRp05)
   resultlist$CC <- c(cc.LRp01,cc.LRp025,cc.LRp05)
   resultlist$WB <- c(vd.LRp01, vd.LRp025, vd.LRp05)
-  
-  
-  
+
+
+
   return(resultlist)
 }
 
@@ -3141,7 +3135,7 @@ latextable <- function(x){
   x <- gsub("Rn.tau.weighted ", "$w_{R_n, \\\\tau, w}$ ", x)
   x <- gsub("Rn.AIC.ranked ", "$w_{R_n, AIC, r}$ ", x)
   x <- gsub("CvM.AIC.ranked ", "$w_{S_n, AIC, r}$ ", x)
-  
+
   cat(x)
 }
 
@@ -3277,22 +3271,22 @@ plot(tauvine, tree = 5, type = 1, edge.labels = "family-par")
 dev.off()
 
 # vuong test
-vuong_self <- function (data, RVM1, RVM2) 
+vuong_self <- function (data, RVM1, RVM2)
 {
-  args <- preproc(c(as.list(environment()), call = match.call()), 
-                  check_data, remove_nas, check_if_01, check_nobs, check_RVMs, 
+  args <- preproc(c(as.list(environment()), call = match.call()),
+                  check_data, remove_nas, check_if_01, check_nobs, check_RVMs,
                   na.txt = " Only complete observations are used.")
   list2env(args, environment())
   N <- args$n
   Model1.ll <- RVineLogLik(data, RVM1, separate = TRUE, calculate.V = FALSE)$loglik
   Model2.ll <- RVineLogLik(data, RVM2, separate = TRUE, calculate.V = FALSE)$loglik
-  anz.1 <- sum(RVM1$family >= 1, na.rm = TRUE) + sum(RVM1$family %in% 
-                                                       c(2, 7, 8, 9, 10, 17, 18, 19, 20, 27, 28, 29, 30, 37, 
-                                                         38, 39, 40, 104, 114, 124, 134, 204, 214, 224, 234), 
+  anz.1 <- sum(RVM1$family >= 1, na.rm = TRUE) + sum(RVM1$family %in%
+                                                       c(2, 7, 8, 9, 10, 17, 18, 19, 20, 27, 28, 29, 30, 37,
+                                                         38, 39, 40, 104, 114, 124, 134, 204, 214, 224, 234),
                                                      na.rm = TRUE)
-  anz.2 <- sum(RVM2$family >= 1, na.rm = TRUE) + sum(RVM2$family %in% 
-                                                       c(2, 7, 8, 9, 10, 17, 18, 19, 20, 27, 28, 29, 30, 37, 
-                                                         38, 39, 40, 104, 114, 124, 134, 204, 214, 224, 234), 
+  anz.2 <- sum(RVM2$family >= 1, na.rm = TRUE) + sum(RVM2$family %in%
+                                                       c(2, 7, 8, 9, 10, 17, 18, 19, 20, 27, 28, 29, 30, 37,
+                                                         38, 39, 40, 104, 114, 124, 134, 204, 214, 224, 234),
                                                      na.rm = TRUE)
   if (all(Model1.ll - Model2.ll == 0)) {
     V <- 0
@@ -3324,7 +3318,7 @@ vuong_self <- function (data, RVM1, RVM2)
     if (abs(V) <= qnorm(1-0.05/2)){
       model.decision <- "no decision"
     }
-    
+
     if(V.Schwarz > qnorm(1-0.05/2)){
       model.decision.Schwarz <- "choose M1"}
     if (V.Schwarz < -qnorm(1-0.05/2)){
@@ -3333,7 +3327,7 @@ vuong_self <- function (data, RVM1, RVM2)
     if (abs(V.Schwarz) <= qnorm(1-0.05/2)){
       model.decision.Schwarz <- "no decision"
     }
-    
+
     if(V.Akaike > qnorm(1-0.05/2)){
       model.decision.Akaike <- "choose M1"}
     if (V.Akaike < -qnorm(1-0.05/2)){
@@ -3342,11 +3336,11 @@ vuong_self <- function (data, RVM1, RVM2)
     if (abs(V.Akaike) <= qnorm(1-0.05/2)){
       model.decision.Akaike <- "no decision"
     }
-      
-    
+
+
   }
-  return(list(statistic = V, statistic.Akaike = V.Akaike, 
-              statistic.Schwarz = V.Schwarz, p.value = p, p.value.Akaike = p.Akaike, 
+  return(list(statistic = V, statistic.Akaike = V.Akaike,
+              statistic.Schwarz = V.Schwarz, p.value = p, p.value.Akaike = p.Akaike,
               p.value.Schwarz = p.Schwarz, model.decision = model.decision,
               model.decision.Schwarz = model.decision.Schwarz,
               model.decision.Akaike = model.decision.Akaike))
